@@ -13,7 +13,7 @@ headers = {
   'APCA-API-SECRET-KEY': os.getenv('ALPACA_PAPER_KEY_SECRET'),
 }
 
-def get_historical_bars(symbols, weeks: int = 1):
+def get_historical_bars(symbols, weeks: int = 2):
   '''
   Alpaca API 를 통해 stock 가격 기록을 받고, 공통 형태로 변환하여 출력
   '''
@@ -40,6 +40,7 @@ def get_historical_bars(symbols, weeks: int = 1):
     )
 
     if response.status_code != 200:
+      print(response.content)
       break
 
     response = response.json()
