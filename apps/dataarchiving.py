@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
+from fastapi import Body
 
 from scripts.archiving import real_time_archiving
 
@@ -13,7 +14,7 @@ def hello_data_archiving():
   )
 
 @dataArchiving.post('/real_time')
-def real_time(symbols: list):
+def real_time(symbols: list = Body(embed=True)):
   '''
   주가 기록 업데이트 요청용 엔드포인트
   변동사항이 발생한 symbol 목록을 반환함

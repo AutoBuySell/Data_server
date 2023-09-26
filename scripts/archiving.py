@@ -3,7 +3,7 @@ import os
 
 from apis.alpaca import get_historical_bars
 
-path_market_data = '../data/market_data/'
+PATH_MARKET_DATA = '../data/market_data/'
 
 def real_time_archiving(symbols: list):
   '''
@@ -20,21 +20,21 @@ def real_time_archiving(symbols: list):
   updated = []
 
   for key in data.keys():
-    if not os.path.isfile(path_market_data + f'{key}.csv'):
-      pd.DataFrame.from_records(data[key], columns=['t', 'o']).to_csv(path_market_data + f'{key}.csv', index=False)
+    if not os.path.isfile(PATH_MARKET_DATA + f'{key}.csv'):
+      pd.DataFrame.from_records(data[key], columns=['t', 'o']).to_csv(PATH_MARKET_DATA + f'{key}.csv', index=False)
     else:
-      prev_pd = pd.read_csv(path_market_data + f'{key}.csv')
+      prev_pd = pd.read_csv(PATH_MARKET_DATA + f'{key}.csv')
       new_pd = pd.DataFrame.from_records(data[key], columns=['t', 'o'])
       if prev_pd['t'].iloc[-1] == new_pd['t'].iloc[-1]:
         continue
       elif prev_pd['t'].iloc[-1] in list(new_pd['t']):
         pd.concat(
           [prev_pd, new_pd.iloc[list(new_pd['t']).index(prev_pd['t'].iloc[-1]):]]
-        ).to_csv(path_market_data + f'{key}.csv')
+        ).to_csv(PATH_MARKET_DATA + f'{key}.csv')
       elif prev_pd['t'].iloc[-1] < new_pd['t'].iloc[0]:
         pd.concat(
           [prev_pd, new_pd]
-        ).to_csv(path_market_data + f'{key}.csv')
+        ).to_csv(PATH_MARKET_DATA + f'{key}.csv')
       else:
         continue
 
