@@ -30,11 +30,11 @@ def real_time_archiving(symbols: list):
       elif prev_pd['t'].iloc[-1] in list(new_pd['t']):
         pd.concat(
           [prev_pd, new_pd.iloc[list(new_pd['t']).index(prev_pd['t'].iloc[-1]):]]
-        ).to_csv(PATH_MARKET_DATA + f'{key}.csv')
+        ).to_csv(PATH_MARKET_DATA + f'{key}.csv', index=False)
       elif prev_pd['t'].iloc[-1] < new_pd['t'].iloc[0]:
         pd.concat(
           [prev_pd, new_pd]
-        ).to_csv(PATH_MARKET_DATA + f'{key}.csv')
+        ).to_csv(PATH_MARKET_DATA + f'{key}.csv', index=False)
       else:
         continue
 
