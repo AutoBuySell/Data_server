@@ -23,8 +23,8 @@ def get_historical_bars(symbols, weeks: int = 2):
   params = {
     'symbols': ','.join(symbols),
     'timeframe': '30Min',
-    'start': (datetime.today() - timedelta(weeks=weeks)).isoformat() + 'Z',
-    'end': (datetime.today() - timedelta(minutes=16)).isoformat() + 'Z',
+    'start': (datetime.utcnow() - timedelta(weeks=weeks)).isoformat() + 'Z',
+    'end': (datetime.utcnow() - timedelta(minutes=16)).isoformat() + 'Z',
     'limit': 1000,
     'adjustment': 'raw',
   }
