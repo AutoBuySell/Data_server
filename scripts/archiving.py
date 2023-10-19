@@ -2,10 +2,11 @@ import pandas as pd
 import os
 import traceback
 
-from apis.alpaca import get_historical_bars
+from apis.alpaca import get_recent_bars, get_historical_bars
 from apps.error import CustomError
 
 PATH_MARKET_DATA = '../data/market_data/'
+PATH_MARKET_LONG_DATA = '../data/market_long_data/'
 
 def real_time_archiving(symbols: list[int]) -> list[str]:
   '''
@@ -24,7 +25,7 @@ def real_time_archiving(symbols: list[int]) -> list[str]:
   '''
   updated = []
 
-  data = get_historical_bars(symbols)
+  data = get_recent_bars(symbols)
 
   try:
     for key in data.keys():
@@ -58,3 +59,24 @@ def real_time_archiving(symbols: list[int]) -> list[str]:
       message="Internal server error",
       detail="updating realtime data"
     )
+
+def historical_archiving(symbol: str, timeframe: str, startDate: str, endDate: str) -> None:
+  '''
+  평가용 장기 데이터를 다운받아 저장소에 저장하는 함수
+  Storing long-term data for evaluation
+
+  원하는 시작 날짜와 종료 날짜 데이터가 이미 모두 존재하는 경우 추가 작업은 진행하지 않음
+  '''
+  if os.path.isfile(PATH_MARKET_LONG_DATA + f'{symbol}_{timeframe}.csv'):
+    prev_pd = pd.read_csv(PATH_MARKET_LONG_DATA + f'{symbol}_{timeframe}.csv')
+    oldest = prev_pd['t'].iloc[0]
+    newest = prev_pd['t'].iloc[-1]
+
+    if startDate >= oldest and endDate <= newest:
+      return
+
+  data = get_historical_bars(symbol, timeframe, startDate, endDate)
+
+  data_pd = pd.DataFrame.from_records(data, columns=['t', 'o'])
+  data_pd['judge'] = [0] * len(data_pd)
+  data_pd.to_csv(PATH_MARKET_LONG_DATA + f'{symbol}_{timeframe}.csv', index=False)
