@@ -32,6 +32,10 @@ app.add_middleware(
 
 @app.get('/')
 def hello_world():
+    '''
+    서버 상태 확인용 엔드포인트
+    Endpoint for checking the server is alive or not.
+    '''
     return JSONResponse(
       content={"message": "HelloWorld!"},
       status_code=200,
