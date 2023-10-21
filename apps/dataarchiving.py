@@ -1,6 +1,5 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-from fastapi import Body
 
 from scripts.archiving import real_time_archiving, historical_archiving
 from apps.error import CustomError
@@ -25,7 +24,7 @@ def hello_data_archiving():
   )
 
 @dataArchiving.post('/real_time')
-def real_time(symbols: list = Body(embed=True)):
+def real_time(data: dict):
   '''
   주가 기록 업데이트 요청용 엔드포인트
   Endpoint for requesting data update
@@ -33,7 +32,14 @@ def real_time(symbols: list = Body(embed=True)):
   변동사항이 발생한 symbol 목록을 반환함
   Return a list of updated symbol
   '''
-  updated = real_time_archiving(symbols=symbols)
+
+  symbols = data.get('symbols')
+  timeframe = data.get('timeframe')
+
+  updated = real_time_archiving(
+    symbols=symbols,
+    timeframe=timeframe
+  )
 
   return JSONResponse(
     content={

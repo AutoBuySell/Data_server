@@ -8,7 +8,7 @@ from apps.error import CustomError
 PATH_MARKET_DATA = '../data/market_data/'
 PATH_MARKET_LONG_DATA = '../data/market_long_data/'
 
-def real_time_archiving(symbols: list[int]) -> list[str]:
+def real_time_archiving(symbols: list[int], timeframe: str) -> list[str]:
   '''
   실시간으로 주가 정보를 받아 저장소에 업데이트 하는 함수
   Updating stored data with real-time data
@@ -25,25 +25,25 @@ def real_time_archiving(symbols: list[int]) -> list[str]:
   '''
   updated = []
 
-  data = get_recent_bars(symbols)
+  data = get_recent_bars(symbols, timeframe)
 
   try:
     for key in data.keys():
-      if not os.path.isfile(PATH_MARKET_DATA + f'{key}.csv'): # In case of No stored data
-        pd.DataFrame.from_records(data[key], columns=['t', 'o']).to_csv(PATH_MARKET_DATA + f'{key}.csv', index=False)
+      if not os.path.isfile(PATH_MARKET_DATA + f'{key}_{timeframe}.csv'): # In case of No stored data
+        pd.DataFrame.from_records(data[key], columns=['t', 'o']).to_csv(PATH_MARKET_DATA + f'{key}_{timeframe}.csv', index=False)
       else:
-        prev_pd = pd.read_csv(PATH_MARKET_DATA + f'{key}.csv')
+        prev_pd = pd.read_csv(PATH_MARKET_DATA + f'{key}_{timeframe}.csv')
         new_pd = pd.DataFrame.from_records(data[key], columns=['t', 'o'])
         if prev_pd['t'].iloc[-1] == new_pd['t'].iloc[-1]: # In case of stored data is up to date (not update)
           continue
         elif prev_pd['t'].iloc[-1] in list(new_pd['t']): # In case any duplicated data exists, update not duplicated data only
           pd.concat(
             [prev_pd, new_pd.iloc[list(new_pd['t']).index(prev_pd['t'].iloc[-1]) + 1:]]
-          ).to_csv(PATH_MARKET_DATA + f'{key}.csv', index=False)
+          ).to_csv(PATH_MARKET_DATA + f'{key}_{timeframe}.csv', index=False)
         elif prev_pd['t'].iloc[-1] < new_pd['t'].iloc[0]: # In case no duplicated data exists, update all new data
           pd.concat(
             [prev_pd, new_pd]
-          ).to_csv(PATH_MARKET_DATA + f'{key}.csv', index=False)
+          ).to_csv(PATH_MARKET_DATA + f'{key}_{timeframe}.csv', index=False)
         else: # not update
           continue
 
