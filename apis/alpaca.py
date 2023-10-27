@@ -108,7 +108,8 @@ def get_historical_bars(symbol, timeframe, startDate, endDate):
 
       response = response.json()
 
-      dataList = [*dataList, *response['bars']]
+      if response['bars']:
+        dataList = [*dataList, *response['bars']]
 
       if response['next_page_token']:
         nextPageToken = response['next_page_token']

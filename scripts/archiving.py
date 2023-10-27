@@ -76,6 +76,8 @@ def historical_archiving(symbol: str, timeframe: str, startDate: str, endDate: s
       return
 
   data = get_historical_bars(symbol, timeframe, startDate, endDate)
+  if len(data) == 0:
+    return
 
   data_pd = pd.DataFrame.from_records(data, columns=['t', 'o'])
   data_pd['judge'] = [0] * len(data_pd)
